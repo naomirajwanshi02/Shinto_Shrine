@@ -25,25 +25,19 @@ export function makeTextures(aniso){
 
   // pale gravel with darker and lighter flecks
   T.gravel = canvasTex(512, 512, (g, w, h) => {
-    g.fillStyle = '#eadfc8'; g.fillRect(0, 0, w, h);
-    for (let i = 0; i < 2600; i++){
-      const d = R() < 0.55;
-      g.fillStyle = d ? `rgba(120,100,70,${.12 + R() * .22})` : `rgba(255,252,240,${.25 + R() * .3})`;
-      g.fillRect(R() * w, R() * h, 1.5 + R() * 2.6, 1.5 + R() * 2.2);
-    }
+    g.fillStyle = '#eee3cf'; g.fillRect(0, 0, w, h);   // plain cream, no flecks
   }, { aniso });
 
   // grey paving slabs in a running bond, one metre by half a metre
   T.paving = canvasTex(512, 512, (g, w, h) => {
-    g.fillStyle = '#8f8d88'; g.fillRect(0, 0, w, h);
-    const rows = 4, rh = h / rows;
+    g.fillStyle = '#a2a29f'; g.fillRect(0, 0, w, h);
+    const rows = 3, rh = h / rows;
     for (let r = 0; r < rows; r++){
       const cols = 2, cw = w / cols, off = (r % 2) * cw / 2;
       for (let c = -1; c <= cols; c++){
-        const s = 188 + R() * 20;
-        g.fillStyle = `rgb(${s | 0},${s - 1 | 0},${s - 4 | 0})`;
-        g.fillRect(c * cw + off + 3, r * rh + 3, cw - 6, rh - 6);
-        for (let k = 0; k < 8; k++){ g.fillStyle = `rgba(${R() < .5 ? '255,255,255' : '60,55,45'},.05)`; g.fillRect(c * cw + off + R() * cw, r * rh + R() * rh, 10 + R() * 30, 4 + R() * 10); }
+        const s = 206 + R() * 10;
+        g.fillStyle = `rgb(${s | 0},${s | 0},${s - 3 | 0})`;
+        g.fillRect(c * cw + off + 1.5, r * rh + 1.5, cw - 3, rh - 3);
       }
     }
   }, { aniso });
@@ -86,14 +80,12 @@ export function makeTextures(aniso){
 
   // grey tile roof: rows of curved tiles
   T.tile = canvasTex(256, 256, (g, w, h) => {
-    g.fillStyle = '#383a3c'; g.fillRect(0, 0, w, h);
-    const rows = 8, rh = h / rows;
+    g.fillStyle = '#6a6c6c'; g.fillRect(0, 0, w, h);
+    const rows = 6, rh = h / rows;
     for (let r = 0; r < rows; r++){
-      const v = 78 + R() * 12;
-      g.fillStyle = `rgb(${v | 0},${v + 2 | 0},${v + 6 | 0})`; g.fillRect(0, r * rh, w, rh - 3);
-      g.fillStyle = 'rgba(255,255,255,.09)'; g.fillRect(0, r * rh, w, 2);
-      g.fillStyle = 'rgba(0,0,0,.5)'; g.fillRect(0, r * rh + rh - 3, w, 3);
-      for (let x = 0; x < w; x += 16){ g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(x, r * rh, 2, rh - 3); }
+      const v = 120 + R() * 10;
+      g.fillStyle = `rgb(${v | 0},${v + 1 | 0},${v + 2 | 0})`; g.fillRect(0, r * rh, w, rh - 3);
+      g.fillStyle = 'rgba(30,30,32,.8)'; g.fillRect(0, r * rh + rh - 3, w, 3);
     }
   }, { aniso });
 

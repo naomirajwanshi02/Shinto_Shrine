@@ -57,7 +57,7 @@ export const PARTS = {
   },
   'lantern-l': {
     name: 'Stone lantern',
-    text: 'A stone lantern (toro) is a gift of light to the kami. From the bottom: base, post, middle platform, the fire chamber with its openings, a wide roof and a jewel on top. Moss grows where the stone stays damp.',
+    text: 'A stone lantern (toro) is a gift of light to the kami. From the bottom: a base of stacked stone steps, a short post, the fire chamber with its small openings, a wide roof and a jewel on top. Its stepped base keeps it steady.',
   },
   'lantern-r': {
     name: 'Stone lantern',

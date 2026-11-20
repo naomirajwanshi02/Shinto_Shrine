@@ -20,15 +20,17 @@ export function buildShrine({ aniso = 8 } = {}){
     red: mat(0xd9441f, { rough: .55 }), redDeep: mat(0x93291a, { rough: .6 }), cloth: mat(0xc43a28, { rough: .8 }),
     black: mat(0x1c1a18, { rough: .5 }), lintel: mat(0x3a3935, { rough: .6 }), lacquer: mat(0x15100d, { rough: .28, metal: .25 }),
     gold: mat(0xd9a52c, { rough: .32, metal: .65 }),
-    wood: mat(0xffffff, { map: T.wood, rough: .9 }), woodDark: mat(0x5a4330, { rough: .9 }), slat: mat(0xffffff, { map: T.slat, rough: .85 }),
+    wood: mat(0xd2b79a, { map: T.wood, rough: .9 }), woodDark: mat(0x5a4330, { rough: .9 }), slat: mat(0xffffff, { map: T.slat, rough: .85 }),
     plaster: mat(0xffffff, { map: T.plaster, rough: .95 }), lattice: mat(0xffffff, { map: T.lattice, rough: .8 }),
     shingle: mat(0xffffff, { map: T.shingle, rough: .95 }), tile: mat(0xffffff, { map: T.tile, rough: .6 }),
-    stone: mat(0xffffff, { map: T.stone, rough: .95 }), granite: mat(0xffffff, { map: T.granite, rough: .9 }),
+    stone: mat(0x908e8a, { rough: 1 }), granite: mat(0xa8a296, { rough: .95 }), baseStone: mat(0x7f7d79, { rough: 1 }),
+    eave: mat(0x8c3d24, { rough: .85 }), ridge: mat(0x4b3829, { rough: .9 }), brown: mat(0x8a5a34, { rough: .85 }), rail: mat(0x6b4426, { rough: .85 }),
+    plank: mat(0xe0b05a, { rough: .8 }), orange: mat(0xd49a4a, { rough: .8 }),
     paving: mat(0xffffff, { map: T.paving, rough: .9 }), gravel: mat(0xffffff, { map: T.gravel, rough: 1 }),
     water: mat(0x5f8a98, { rough: .08, metal: .1 }), moss: mat(0x7f9340, { rough: 1 }),
     straw: mat(0xd6bd78, { rough: .95 }), paper: mat(0xf8f2e4, { rough: .9, side: THREE.DoubleSide }),
     lamp: mat(0xffffff, { map: T.paper, rough: .8, emissive: 0xffc27a }),
-    fox: mat(0x5c463b, { rough: .75 }), ema: mat(0xffffff, { map: T.ema, rough: .8 }),
+    fox: mat(0x5b4a49, { rough: .8 }), ema: mat(0xffffff, { map: T.ema, rough: .8 }),
     dark: mat(0x1c1410, { rough: .9 }), shade: mat(0x2a1c12, { rough: .9 }),
   };
   M.lamp.emissiveIntensity = .22;
@@ -48,15 +50,15 @@ export function buildShrine({ aniso = 8 } = {}){
     parent.add(inst, cap);
     return inst;
   };
-  const ridgeCap = (parent, o, x, z, len) => {
+  const ridgeCap = (parent, o, x, z, len, m = M.shade) => {
     const y = o.base + o.rise + (o.bump || 0) - .12;
-    parent.add(at(box(.85, .5, len + .2, M.shade), x, y, z));
+    parent.add(at(box(.85, .5, len + .2, m), x, y, z));
   };
 
   // ------------------------------------------------------------------ ground (gravel)
   {
     const g = P('gravel');
-    const sh = new THREE.Shape(), N = 90, cx = 3, cz = 3, rx = 33, rz = 27;
+    const sh = new THREE.Shape(), N = 90, cx = 3, cz = 4.5, rx = 31, rz = 25.5;
     for (let i = 0; i < N; i++){
       const a = i / N * Math.PI * 2;
       const r = 1 + .05 * Math.sin(3 * a + 1) + .035 * Math.sin(5 * a + 2) + .025 * Math.sin(9 * a + 4);
@@ -74,7 +76,7 @@ export function buildShrine({ aniso = 8 } = {}){
   // ------------------------------------------------------------------ stone paving
   {
     const g = P('paving');
-    const p = (w, h, d, x, y, z) => g.add(tbox(w, h, d, M.paving, x, y, z, .5));
+    const p = (w, h, d, x, y, z) => g.add(tbox(w, h, d, M.paving, x, y, z, .25));
     p(7.2, .35, 9.4, -18.6, 0, 0);             // plaza under the gate
     p(8.2, .1, 8.8, -10.9, 0, 0);              // path to the hall
     p(3.8, .1, 17, -13.1, 0, 12.5);            // path branching to the shelter (x −15 … −11.2, z 4 … 21)
@@ -116,70 +118,71 @@ export function buildShrine({ aniso = 8 } = {}){
   // ------------------------------------------------------------------ fox guardians
   const fox = (dir) => {
     const g = new THREE.Group();
-    // pedestal
-    g.add(tbox(2.3, .7, 2.3, M.granite, 0, 0, 0, .6));
-    g.add(tbox(1.8, 1.5, 1.8, M.granite, 0, .7, 0, .6));
-    g.add(tbox(2.1, .3, 2.1, M.granite, 0, 2.2, 0, .6));
-    const f = new THREE.Group(); f.position.y = 2.5; g.add(f);       // the fox faces +x
-    f.add(ball(.66, M.fox, -.18, .72, 0, 1.1, 1, .85));
-    f.add(ball(.5, M.fox, .16, 1.08, 0, .8, 1.18, .72));
+    // stepped stone pedestal: wide low slab, two blocks, a wide cap and a small plinth (as in the picture)
+    g.add(tbox(2.8, .42, 2.8, M.granite, 0, 0, 0));
+    g.add(tbox(2.3, .95, 2.3, M.granite, 0, .42, 0));
+    g.add(tbox(1.9, 1.0, 1.9, M.granite, 0, 1.37, 0));
+    g.add(tbox(2.2, .3, 2.2, M.granite, 0, 2.37, 0));
+    g.add(tbox(1.45, .3, 1.45, M.granite, 0, 2.67, 0));
+    // a slim, upright sitting fox facing +x
+    const f = new THREE.Group(); f.position.y = 2.97; g.add(f);
+    f.add(ball(.36, M.fox, -.2, .36, 0, 1.15, .95, .9));                      // haunch
+    f.add(ball(.3, M.fox, .02, 1.0, 0, .85, 1.75, .8));                       // slim chest and body
     for (const s of [-1, 1]){
-      f.add(cyl(.12, .15, 1.0, M.fox, .42, 0, s * .22, 10));
-      f.add(ball(.19, M.fox, .5, .08, s * .22, 1.4, .6, .8));
-      f.add(ball(.21, M.fox, -.05, .16, s * .46, 1.5, .6, .8));
+      f.add(cyl(.075, .09, 1.05, M.fox, .3, 0, s * .15, 10));                 // thin forelegs
+      f.add(ball(.13, M.fox, .38, .06, s * .15, 1.5, .5, .9));                // paws
+      f.add(ball(.12, M.fox, -.1, .1, s * .36, 1.6, .55, .9));                // hind feet
     }
-    f.add(cyl(.2, .28, .5, M.fox, .26, 1.38, 0, 12));
-    f.add(ball(.36, M.fox, .3, 1.95, 0, 1, .95, .92));
-    const snout = new THREE.Mesh(new THREE.CylinderGeometry(.07, .2, .6, 12), M.fox);
-    snout.rotation.z = -Math.PI / 2; snout.position.set(.78, 1.86, 0); f.add(snout);
-    f.add(ball(.07, M.black, 1.09, 1.88, 0));
+    f.add(cyl(.16, .22, .55, M.fox, .12, 1.4, 0, 12));                        // long neck
+    f.add(ball(.25, M.fox, .2, 1.98, 0, 1.05, .95, .9));                      // head
+    const snout = new THREE.Mesh(new THREE.ConeGeometry(.12, .5, 10), M.fox);
+    snout.rotation.z = -Math.PI / 2 - .12; snout.position.set(.55, 1.92, 0); f.add(snout);
+    f.add(ball(.05, M.black, .8, 1.9, 0));
     for (const s of [-1, 1]){
-      const ear = new THREE.Mesh(new THREE.ConeGeometry(.13, .46, 8), M.fox);
-      ear.position.set(.12, 2.38, s * .21); ear.rotation.x = s * .18; ear.rotation.z = .12; f.add(ear);
-      f.add(ball(.04, M.black, .55, 2.02, s * .17));
+      const ear = new THREE.Mesh(new THREE.ConeGeometry(.11, .5, 8), M.fox);
+      ear.position.set(.1, 2.42, s * .15); ear.rotation.x = s * .12; ear.rotation.z = .1; f.add(ear);
+      f.add(ball(.035, M.black, .38, 2.04, s * .13));
     }
-    // the tail curls up behind
-    const tail = ball(.3, M.fox, -.95, .72, 0, 2.2, .75, .75); tail.rotation.z = .55; f.add(tail);
-    // red bib
-    f.add(cyl(.34, .42, .3, M.cloth, .26, 1.3, 0, 16));
-    f.add(box(.05, .6, .4, M.cloth, .66, 1.0, 0));
+    // the tail rises behind the back in a slim curve
+    const tailCurve = new THREE.CatmullRomCurve3([[-.3, .18, 0], [-.7, .22, 0], [-.88, .6, 0], [-.82, 1.1, 0], [-.62, 1.45, 0]].map((p) => new THREE.Vector3(...p)));
+    f.add(new THREE.Mesh(new THREE.TubeGeometry(tailCurve, 24, .12, 8), M.fox));
+    f.add(ball(.12, M.fox, -.62, 1.5, 0, 1, 1.4, 1));
+    // red bib: a collar round the neck and a tongue down the chest
+    f.add(cyl(.27, .32, .42, M.cloth, .12, 1.28, 0, 16));
+    f.add(box(.04, .62, .3, M.cloth, .36, .78, 0));
     g.rotation.y = dir;
     return g;
   };
   {
-    const l = P('fox-l'); const a = fox(-Math.PI / 2); a.position.set(-15.2, 0, -6.8); l.add(a);
-    const r = P('fox-r'); const b = fox(Math.PI / 2); b.position.set(-15.2, 0, 6.8); r.add(b);
+    const l = P('fox-l'); const a = fox(-Math.PI / 2); a.position.set(-15.6, 0, -7.6); l.add(a);
+    const r = P('fox-r'); const b = fox(Math.PI / 2); b.position.set(-16.8, 0, 7.0); r.add(b);
   }
 
   // ------------------------------------------------------------------ stone lanterns
   const lantern = () => {
     const g = new THREE.Group();
     const G = M.granite;
-    g.add(tbox(1.7, .32, 1.7, G, 0, 0, 0, .6));
-    g.add(cyl(.5, .62, .5, G, 0, .32, 0, 14));
-    g.add(cyl(.28, .32, 1.1, G, 0, .82, 0, 14));
-    g.add(cyl(.4, .4, .2, G, 0, 1.32, 0, 14));
-    g.add(cyl(.28, .28, .5, G, 0, 1.52, 0, 14));
-    g.add(tbox(1.5, .28, 1.5, G, 0, 2.02, 0, .6));
-    g.add(tbox(1.0, 1.0, 1.0, G, 0, 2.3, 0, .6));
+    // a four-step stone base, a short post, the fire chamber, a wide roof and a jewel, as in the picture
+    g.add(tbox(2.3, .24, 2.3, G, 0, 0, 0));
+    g.add(tbox(1.9, .24, 1.9, G, 0, .24, 0));
+    g.add(tbox(1.5, .24, 1.5, G, 0, .48, 0));
+    g.add(tbox(1.1, .24, 1.1, G, 0, .72, 0));
+    g.add(tbox(.7, .62, .7, G, 0, .96, 0));                      // post
+    g.add(tbox(.95, .16, .95, G, 0, 1.58, 0));                   // middle platform
+    g.add(tbox(.8, .8, .8, G, 0, 1.74, 0));                      // fire chamber
     for (let k = 0; k < 4; k++){                                 // light openings
       const a = k * Math.PI / 2, s = new THREE.Group(); s.rotation.y = a; g.add(s);
-      s.add(box(.02, .5, .5, M.dark, .5, 2.55, 0));
-      s.add(box(.02, .12, .5, M.lamp, .505, 2.45, 0));
+      s.add(box(.02, .3, .3, M.dark, .405, 1.98, 0));
     }
-    g.add(tbox(1.6, .2, 1.6, G, 0, 3.3, 0, .6));
-    g.add(pyramid(1.35, 1.0, G, 0, 3.5, 0));
-    g.add(cyl(.14, .3, .22, G, 0, 4.48, 0, 12));
-    g.add(ball(.22, G, 0, 4.82, 0, 1, 1.15, 1));
-    const cone = new THREE.Mesh(new THREE.ConeGeometry(.09, .3, 8), G); cone.position.y = 5.1; g.add(cone);
-    // moss on the weathered stone
-    for (let i = 0; i < 12; i++){
-      const a = R() * Math.PI * 2, r = .5 + R() * .7, y = [.3, .36, 1.2, 1.4, 2.04, 3.3, 3.34][i % 7];
-      g.add(ball(.16 + R() * .12, M.moss, Math.cos(a) * r * (y < 1 ? 1 : .55), y + .02, Math.sin(a) * r * (y < 1 ? 1 : .55), 1, .38, 1));
-    }
+    g.add(tbox(1.0, .14, 1.0, G, 0, 2.54, 0));
+    g.add(pyramid(1.1, .75, G, 0, 2.68, 0));                     // roof
+    g.add(tbox(.3, .26, .3, G, 0, 3.4, 0));
+    g.add(ball(.16, G, 0, 3.78, 0, 1, 1.15, 1));
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(.07, .22, 8), G); cone.position.y = 4.0; g.add(cone);
+    g.scale.setScalar(1.2);
     return g;
   };
-  { const a = P('lantern-l'); a.add(at(lantern(), -9.2, 0, -6.0)); const b = P('lantern-r'); const lb = lantern(); lb.rotation.y = .4; b.add(at(lb, -9.2, 0, 6.0)); }
+  { const a = P('lantern-l'); a.add(at(lantern(), -4.6, 0, -6.4)); const b = P('lantern-r'); const lb = lantern(); b.add(at(lb, -4.6, 0, 3.6)); }
 
   // ------------------------------------------------------------------ small pavilions: shared pieces
   const shelterRoof = (o, mats, parent, x, z, rotY = 0) => {
@@ -217,18 +220,20 @@ export function buildShrine({ aniso = 8 } = {}){
   {
     // stone platform
     const pf = P('haiden-platform');
-    pf.add(tbox(16.4, F, 23.5, M.stone, 5.8, 0, -2.75, .4));
-    pf.add(tbox(16.7, .12, 23.8, M.granite, 5.8, F, -2.75, .5));
-    // stairs
+    // plain grey slabs, no texture: a low wide base under a taller upper platform (nothing shares a plane)
+    pf.add(box(18.0, .45, 25.1, M.baseStone, 5.8, 0, -2.75));
+    pf.add(box(16.4, F - .45, 23.5, M.stone, 5.8, .45, -2.75));
+    // stairs, off-centre like the picture, with sloping side walls
     const st = P('haiden-stairs');
+    const zs = -1.5;
     for (let j = 1; j <= 5; j++){
       const xf = -2.4 - .75 * (6 - j);
-      st.add(tbox(-2.4 - xf, .2 * j, 6.0, M.granite, (xf + -2.4) / 2, 0, 0, .6));
+      st.add(box(-2.3 - xf, .2 * j, 5.2, M.stone, (xf - 2.3) / 2, 0, zs));
     }
-    const L = Math.hypot(4.5, 1.2), tilt = Math.atan2(1.2, 4.5);
     for (const s of [-1, 1]){
-      const cheek = tbox(L, .5, .7, M.stone, 0, 0, 0, .5); cheek.position.set(-4.65, .72, s * 3.4); cheek.rotation.z = tilt; st.add(cheek);
-      st.add(tbox(.8, .45, .7, M.granite, -2.8, 1.0, s * 3.4, .6));
+      const sh = new THREE.Shape([[0, 0], [4.7, 0], [4.7, 1.6], [0, .32]].map((p) => new THREE.Vector2(p[0], p[1])));
+      const cheek = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: .6, bevelEnabled: false }), M.baseStone);
+      cheek.position.set(-7.0, 0, zs + s * 2.9 - .3); st.add(cheek);
     }
 
     // body of the hall
@@ -286,9 +291,9 @@ export function buildShrine({ aniso = 8 } = {}){
 
     // ---- main roof
     const rf = P('haiden-roof');
-    const o = { half: 8.2, base: 5.05, rise: 5.4, p: 1.35, lift: .45, thick: .62, len: 16.6 };
-    shelterRoof(o, [M.shingle, M.shade], rf, 5.7, 0);
-    ridgeCap(rf, o, 5.7, 0, o.len);
+    const o = { half: 8.2, base: 5.05, rise: 5.4, p: 1.35, lift: .45, thick: .5, len: 16.6 };
+    shelterRoof(o, [M.shingle, M.eave], rf, 5.7, 0);
+    ridgeCap(rf, o, 5.7, 0, o.len, M.ridge);
     for (const s of [-1, 1]){
       const d = cyl(.42, .42, .18, M.gold, 0, 0, 0, 20); d.rotation.x = Math.PI / 2; d.position.set(5.7, o.base + o.rise + .12, s * (o.len / 2 + .12)); rf.add(d);
     }
@@ -305,7 +310,7 @@ export function buildShrine({ aniso = 8 } = {}){
     // ---- curved porch with the wave-shaped kara-hafu gable
     const pr = P('haiden-porch');
     const po = { half: 4.7, base: 4.55, rise: 2.7, p: 1.35, lift: .4, thick: .5, bump: .75, bumpW: .5, len: 7.6 };
-    shelterRoof(po, [M.shingle, M.shade], pr, 1.2, 0, Math.PI / 2);
+    shelterRoof(po, [M.shingle, M.eave], pr, 1.2, 0, Math.PI / 2);
     // red barge board that follows the wave
     const bo = { ...po, half: po.half + .12, base: po.base + .06, rise: po.rise + .04, thick: .72, len: .5 };
     shelterRoof(bo, [M.red, M.red], pr, -2.85, 0, Math.PI / 2);
@@ -364,8 +369,8 @@ export function buildShrine({ aniso = 8 } = {}){
     const sh = P('side-hall');
     sh.add(tbox(9.2, 2.7, 6.5, M.plaster, 5.6, F, -9.05, .5));
     const so = { half: 4.7, base: 4.1, rise: 2.7, p: 1.3, lift: .38, thick: .5, len: 11.4 };
-    shelterRoof(so, [M.shingle, M.shade], sh, 5.6, -9.05, Math.PI / 2);
-    const rc = box(11.6, .5, .85, M.shade, 5.6, so.base + so.rise - .12, -9.05); sh.add(rc);
+    shelterRoof(so, [M.shingle, M.eave], sh, 5.6, -9.05, Math.PI / 2);
+    const rc = box(11.6, .5, .85, M.ridge, 5.6, so.base + so.rise - .12, -9.05); sh.add(rc);
     for (const dz of [-1, 1]){
       const zz = -9.05 + dz * (so.half - .35);
       const inst = new THREE.InstancedMesh(new THREE.BoxGeometry(.5, .24, .22), M.red, 20);
@@ -403,8 +408,8 @@ export function buildShrine({ aniso = 8 } = {}){
     // the portable shrine
     const body = P('mikoshi-body', c), poles = P('mikoshi-poles', c), tas = P('mikoshi-tassels', c);
     const y0 = .25;
-    for (const s of [-1, 1]) poles.add(tbox(.3, .3, 6.0, M.wood, s * .85, y0, 0, .8));
-    for (const z of [-1.3, 1.3]){ poles.add(tbox(2.3, .22, .34, M.wood, 0, y0 + .3, z, .8)); }
+    for (const s of [-1, 1]) poles.add(box(.3, .3, 6.0, M.lacquer, s * .85, y0, 0));
+    for (const z of [-1.3, 1.3]){ poles.add(box(2.5, .22, .34, M.orange, 0, y0 + .3, z)); }
     for (const s of [-1, 1]) for (const z of [-2.8, 2.8]) poles.add(cyl(.17, .17, .08, M.gold, s * .85, y0 + .12, z, 10));
     body.add(tbox(2.0, .4, 2.0, M.lacquer, 0, y0 + .55, 0)); body.add(box(2.1, .1, 2.1, M.gold, 0, y0 + .95, 0));
     body.add(box(1.6, 1.05, 1.6, M.lacquer, 0, y0 + 1.05, 0));
@@ -424,30 +429,40 @@ export function buildShrine({ aniso = 8 } = {}){
     for (const sx of [-1, 1]) for (const sz of [-1, 1]){
       const x = sx * 1.12, z = sz * 1.12;
       tas.add(ball(.14, M.gold, x, y0 + 2.2, z));
-      tas.add(cyl(.07, .07, 1.3, M.cloth, x, y0 + .9, z, 8));
+      tas.add(cyl(.05, .05, 1.5, M.cloth, x, y0 + .7, z, 8));
       tas.add(cyl(.2, .06, .46, M.cloth, x, y0 + .45, z, 10));
       tas.add(cyl(.12, .12, .1, M.gold, x, y0 + .95, z, 8));
     }
   }
 
-  // ------------------------------------------------------------------ ema rack
+  // ------------------------------------------------------------------ ema rack (as in the picture: a wooden board with a small
+  // grey roof, notched end posts, four rails and five columns of rounded wish plaques)
   {
     const c = new THREE.Group(); c.position.set(12.5, 0, 21); root.add(c);
     const rack = P('ema-board', c), pl = P('ema-plaques', c);
-    rack.add(tbox(4.8, .15, 10.4, M.paving, 0, 0, 0, .5));
-    for (const s of [-1, 1]) rack.add(cyl(.17, .2, 4.3, M.wood, 0, .15, s * 3.4, 12));
-    rack.add(tbox(.46, 2.9, 7.0, M.woodDark, 0, .7, 0, .8));
-    rack.add(tbox(.62, .22, 7.4, M.wood, 0, 3.55, 0, .8));
-    rack.add(tbox(.62, .2, 7.4, M.wood, 0, .55, 0, .8));
-    const o = { half: 1.6, base: 3.9, rise: 1.0, p: 1.4, lift: .2, thick: .24, len: 8.0 };
-    shelterRoof(o, [M.tile, M.shade], rack, 0, 0);
-    ridgeCap(rack, o, 0, 0, o.len);
-    for (const s of [-1, 1]) rack.add(tbox(.3, .3, .3, M.woodDark, 0, 3.78, s * 3.4));
-    for (let r = 0; r < 4; r++) for (let k = 0; k < 9; k++){
-      const p = box(.07, .64, .5, M.ema, -.28, 1.0 + r * .64, -2.9 + k * .72);
-      p.rotation.x = (R() - .5) * .08; pl.add(p);
-      if (R() < .9) pl.add(box(.02, .34, .3, M.red, -.325, 1.12 + r * .64, -2.9 + k * .72));
-      pl.add(box(.02, .02, .22, M.dark, -.325, 1.62 + r * .64, -2.9 + k * .72));
+    rack.add(tbox(5.0, .14, 9.2, M.paving, 0, 0, 0, .25));
+    for (const s of [-1, 1]){
+      rack.add(tbox(.55, 3.7, .55, M.wood, 0, .14, s * 3.0, .8));
+      for (const y of [1.0, 1.9, 2.8]) rack.add(box(.34, .22, .22, M.wood, 0, .14 + y, s * 3.36));       // notches in the post
+      rack.add(box(.8, .26, .8, M.woodDark, 0, 3.7, s * 3.0));                                           // bracket under the roof
+    }
+    rack.add(box(.3, 3.05, 5.6, M.brown, 0, .5, 0));
+    for (let k = 0; k <= 4; k++) rack.add(box(.18, .14, 5.7, M.rail, -.2, .5 + k * .76, 0));
+    const o = { half: 1.45, base: 3.8, rise: .8, p: 1.3, lift: .32, thick: .2, len: 7.4 };
+    shelterRoof(o, [M.tile, M.ridge], rack, 0, 0);
+    ridgeCap(rack, { ...o, rise: o.rise }, 0, 0, o.len, M.ridge);
+    // plaques: a rounded rectangle, a little thicker than a board, with a darker rim behind
+    const rr = (w, h, r) => { const s = new THREE.Shape(); const x = -w / 2, y = -h / 2;
+      s.moveTo(x + r, y); s.lineTo(x + w - r, y); s.quadraticCurveTo(x + w, y, x + w, y + r); s.lineTo(x + w, y + h - r); s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r); s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y); return s; };
+    const faceGeo = new THREE.ExtrudeGeometry(rr(.8, .56, .2), { depth: .1, bevelEnabled: true, bevelThickness: .02, bevelSize: .02, bevelSegments: 2 });
+    const rimGeo = new THREE.ExtrudeGeometry(rr(.9, .64, .24), { depth: .05, bevelEnabled: false });
+    const tints = [0xe2b45f, 0xdba84e, 0xeac06c].map((c) => mat(c, { rough: .75 }));
+    const rimMat = mat(0xa8793a, { rough: .85 });
+    for (let r = 0; r < 4; r++) for (let k = 0; k < 5; k++){
+      const y = .5 + .07 + r * .76 + .38 + .06, z = -2.1 + k * 1.05 + (R() - .5) * .08;
+      const rim = new THREE.Mesh(rimGeo, rimMat); rim.rotation.y = -Math.PI / 2; rim.position.set(-.15, y, z); pl.add(rim);
+      const p = new THREE.Mesh(faceGeo, tints[(r + k * 2) % 3]); p.rotation.y = -Math.PI / 2; p.rotation.x = (R() - .5) * .05; p.position.set(-.19, y, z); pl.add(p);
     }
   }
 
