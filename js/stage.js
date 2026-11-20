@@ -3,7 +3,7 @@
 // and reports it through onPick(id); a tap on empty space reports null.
 
 import * as THREE from 'three';
-import { buildShrine } from './shrine.js?v=4';
+import { buildShrine } from './shrine.js?v=5';
 
 const HOME = { az: -0.95, el: 0.5, dist: 98 };
 const LIM = { elMin: 0.04, elMax: 1.4, dMin: 22, dMax: 230 };
@@ -114,6 +114,7 @@ export function mountStage(container, { onPick } = {}){
 
   window.__shrineView = (az, el, dist) => Object.assign(st, { az, el, dist, vAz: 0, idle: -9999 });
   window.__shrineSelect = select;
+  window.__shrineTarget = (x, y, z) => target.set(x, y, z);
   const clock = () => {
     S.raf = requestAnimationFrame(clock);
     const now = performance.now(), dt = Math.min(0.05, (now - S.last) / 1000); S.last = now; S.t += dt;

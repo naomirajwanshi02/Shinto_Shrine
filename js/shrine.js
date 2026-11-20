@@ -5,7 +5,7 @@
 // Every touchable piece is a "part": a group whose userData.part is its key in js/data.js.
 
 import * as THREE from 'three';
-import { rng, makeTextures, mat, box, cyl, ball, pyramid, loft, tbox, gableFace, gableRoof, roofTopY } from './kit.js?v=4';
+import { rng, makeTextures, mat, box, cyl, ball, pyramid, loft, tbox, gableFace, gableRoof, roofTopY } from './kit.js?v=5';
 
 export function buildShrine({ aniso = 8 } = {}){
   const T = makeTextures(aniso);
@@ -85,32 +85,39 @@ export function buildShrine({ aniso = 8 } = {}){
 
   // ------------------------------------------------------------------ torii gate
   {
-    const gate = new THREE.Group(); gate.position.set(-18.6, .35, 0); root.add(gate);
+    const gate = new THREE.Group(); gate.position.set(-18.6, .51, 0); root.add(gate);
     const pillars = P('torii-pillars', gate), bases = P('torii-bases', gate), nuki = P('torii-nuki', gate), top = P('torii-kasagi', gate);
+    const stp = P('torii-steps', gate);
+    const SP = 3.3;                                           // half the span between the pillars
     for (const s of [-1, 1]){
-      const col = new THREE.Group(); col.position.set(0, 0, s * 3.3); col.rotation.x = -s * .028; gate.add(col);
-      bases.add(cyl(.6, .66, 1.1, M.black, 0, 0, s * 3.3, 20));
-      bases.add(cyl(.52, .6, .12, M.black, 0, 1.1, s * 3.3, 20));
-      const post = cyl(.41, .5, 6.0, M.red, 0, 1.2, 0, 22);
-      // the pillar leans a little inward: put the pillar mesh in the leaning group
-      col.add(post); pillars.add(col);
-      // wedges that lock the tie beam in place
-      nuki.add(box(.32, .95, .5, M.redDeep, 0, 4.9, s * 3.92));
+      // stone plinth, black base cap and a slim red pillar that leans a little inward
+      stp.add(box(2.1, .16, 2.1, M.granite, 0, -.16, s * SP));
+      stp.add(box(1.6, .1, 1.6, M.granite, 0, -.26, s * SP));
+      bases.add(cyl(.62, .66, 1.0, M.black, 0, 0, s * SP, 24));
+      const col = new THREE.Group(); col.position.set(0, 0, s * SP); col.rotation.x = -s * .028; gate.add(col);
+      col.add(cyl(.38, .46, 6.2, M.red, 0, 1.0, 0, 24));
+      // the round collar where the pillar meets the upper lintel
+      col.add(cyl(.5, .5, .1, M.red, 0, 6.2, 0, 24));
+      col.add(cyl(.5, .42, .12, M.red, 0, 6.5, 0, 24));
+      pillars.add(col);
     }
-    nuki.add(box(.62, .56, 9.7, M.red, 0, 5.0, 0));
-    nuki.add(box(.56, 1.2, .5, M.red, 0, 5.56, 0));        // gakuzuka, the strut in the middle
-    top.add(box(.95, .5, 9.4, M.red, 0, 6.72, 0));         // shimaki
-    // kasagi: a lintel that curves up at both ends
-    const prof = [[-.85, 0], [.85, 0], [.8, .45], [.55, .62], [-.55, .62], [-.8, .45]];
+    // nuki: a square tie beam that passes through both pillars and sticks out a little on each side
+    nuki.add(box(.6, .62, 8.5, M.red, 0, 4.9, 0));
+    // gakuzuka: the short upright in the middle between the tie beam and the upper lintel
+    nuki.add(box(.46, 1.2, .5, M.red, 0, 5.52, 0));
+    // shimaki: the red lintel that sits on the pillars, a little shorter than the black-grey top beam
+    top.add(box(.9, .55, 10.4, M.red, 0, 6.72, 0));
+    // kasagi: dark grey top beam with a black lower lip, curving up at both ends
+    const prof = [[-1.0, 0], [1.0, 0], [.95, .3], [.7, .6], [-.7, .6], [-.95, .3]];
     const st = [];
-    for (let i = 0; i <= 28; i++){ const z = -5.6 + 11.2 * i / 28; st.push([z, 0, .7 * Math.pow(Math.abs(z) / 5.6, 2.2)]); }
-    const kasa = loft(prof, st, [M.lintel]);
-    kasa.position.y = 7.25; top.add(kasa);
+    for (let i = 0; i <= 28; i++){ const z = -5.6 + 11.2 * i / 28; st.push([z, 0, .55 * Math.pow(Math.abs(z) / 5.6, 2.2)]); }
+    const kasa = loft(prof, st, [M.lintel, M.black], { edgeGroup: [1, 1, 0, 0, 0, 1] });
+    kasa.position.y = 7.27; top.add(kasa);
   }
   {
-    const g = P('torii-steps');
-    g.add(tbox(1.5, .12, 6.6, M.paving, -23.0, 0, 0, .5));
-    g.add(tbox(.9, .24, 6.6, M.paving, -22.65, 0, 0, .5));
+    const g = parts['torii-steps'];
+    g.add(tbox(1.5, .12, 6.6, M.paving, -4.4, -.51, 0, .25));
+    g.add(tbox(.9, .24, 6.6, M.paving, -4.05, -.51, 0, .25));
   }
 
   // ------------------------------------------------------------------ fox guardians
