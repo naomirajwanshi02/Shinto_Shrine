@@ -18,7 +18,7 @@ export function buildShrine({ aniso = 8 } = {}){
   // ------------------------------------------------------------------ materials
   const M = {
     red: mat(0xd9441f, { rough: .55 }), redDeep: mat(0x93291a, { rough: .6 }), cloth: mat(0xc43a28, { rough: .8 }),
-    black: mat(0x1c1a18, { rough: .5 }), lintel: mat(0x3a3935, { rough: .6 }), lacquer: mat(0x15100d, { rough: .28, metal: .25 }),
+    black: mat(0x1c1a18, { rough: .5 }), lintel: mat(0x505155, { rough: .6 }), lacquer: mat(0x15100d, { rough: .28, metal: .25 }),
     gold: mat(0xd9a52c, { rough: .32, metal: .65 }),
     wood: mat(0xd2b79a, { map: T.wood, rough: .9 }), woodDark: mat(0x5a4330, { rough: .9 }), slat: mat(0xffffff, { map: T.slat, rough: .85 }),
     plaster: mat(0xffffff, { map: T.plaster, rough: .95 }), lattice: mat(0xffffff, { map: T.lattice, rough: .8 }),
@@ -91,7 +91,7 @@ export function buildShrine({ aniso = 8 } = {}){
       const col = new THREE.Group(); col.position.set(0, 0, s * 3.3); col.rotation.x = -s * .028; gate.add(col);
       bases.add(cyl(.6, .66, 1.1, M.black, 0, 0, s * 3.3, 20));
       bases.add(cyl(.52, .6, .12, M.black, 0, 1.1, s * 3.3, 20));
-      const post = cyl(.41, .5, 7.1, M.red, 0, 1.2, 0, 22);
+      const post = cyl(.41, .5, 6.0, M.red, 0, 1.2, 0, 22);
       // the pillar leans a little inward: put the pillar mesh in the leaning group
       col.add(post); pillars.add(col);
       // wedges that lock the tie beam in place
@@ -99,15 +99,13 @@ export function buildShrine({ aniso = 8 } = {}){
     }
     nuki.add(box(.62, .56, 9.7, M.red, 0, 5.0, 0));
     nuki.add(box(.56, 1.2, .5, M.red, 0, 5.56, 0));        // gakuzuka, the strut in the middle
-    top.add(box(.95, .52, 10.8, M.red, 0, 6.75, 0));       // shimaki
+    top.add(box(.95, .5, 9.4, M.red, 0, 6.72, 0));         // shimaki
     // kasagi: a lintel that curves up at both ends
-    const prof = [[-1.15, 0], [1.15, 0], [1.2, .42], [0, 1.0], [-1.2, .42]];
+    const prof = [[-.85, 0], [.85, 0], [.8, .45], [.55, .62], [-.55, .62], [-.8, .45]];
     const st = [];
-    for (let i = 0; i <= 28; i++){ const z = -6.6 + 13.2 * i / 28; st.push([z, 0, 1.1 * Math.pow(Math.abs(z) / 6.6, 2.4)]); }
-    const kasa = loft(prof, st, [M.lintel], { smooth: [false, false, true, true, true] });
-    kasa.position.y = 7.27; top.add(kasa);
-    // cut ends: black end caps are part of the loft; add a thin red stripe under it
-    top.add(box(1.5, .1, 10.4, M.black, 0, 7.2, 0));
+    for (let i = 0; i <= 28; i++){ const z = -5.6 + 11.2 * i / 28; st.push([z, 0, .7 * Math.pow(Math.abs(z) / 5.6, 2.2)]); }
+    const kasa = loft(prof, st, [M.lintel]);
+    kasa.position.y = 7.25; top.add(kasa);
   }
   {
     const g = P('torii-steps');
@@ -154,8 +152,8 @@ export function buildShrine({ aniso = 8 } = {}){
     return g;
   };
   {
-    const l = P('fox-l'); const a = fox(-Math.PI / 2); a.position.set(-15.6, 0, -7.6); l.add(a);
-    const r = P('fox-r'); const b = fox(Math.PI / 2); b.position.set(-16.8, 0, 7.0); r.add(b);
+    const l = P('fox-l'); const a = fox(Math.PI); a.position.set(-16.6, 0, -7.2); l.add(a);
+    const r = P('fox-r'); const b = fox(Math.PI); b.position.set(-16.8, 0, 7.2); r.add(b);
   }
 
   // ------------------------------------------------------------------ stone lanterns
@@ -286,7 +284,7 @@ export function buildShrine({ aniso = 8 } = {}){
     };
     rail(-1.7, -7, -1.7, -3.0); rail(-1.7, 3.0, -1.7, 7);
     rail(-1.7, 7, 11.1, 7);
-    rail(-1.7, -7, .8, -7);
+    rail(-1.7, -7, -1.7, -13.8);
     rail(-1.7, -3.0, -1.7, -2.6); // closes up to the porch pillar
 
     // ---- main roof
@@ -365,27 +363,27 @@ export function buildShrine({ aniso = 8 } = {}){
       g.add(cyl(.02, .02, .2, M.red, -1.35, F + 1.3, z, 6));
     }
 
-    // ---- side hall behind
+    // ---- side hall: a lower wing joined to the hall on its -z side, same front, ridge parallel to the main roof
     const sh = P('side-hall');
-    sh.add(tbox(9.2, 2.7, 6.5, M.plaster, 5.6, F, -9.05, .5));
-    const so = { half: 4.7, base: 4.1, rise: 2.7, p: 1.3, lift: .38, thick: .5, len: 11.4 };
-    shelterRoof(so, [M.shingle, M.eave], sh, 5.6, -9.05, Math.PI / 2);
-    const rc = box(11.6, .5, .85, M.ridge, 5.6, so.base + so.rise - .12, -9.05); sh.add(rc);
-    for (const dz of [-1, 1]){
-      const zz = -9.05 + dz * (so.half - .35);
-      const inst = new THREE.InstancedMesh(new THREE.BoxGeometry(.5, .24, .22), M.red, 20);
-      const m4 = new THREE.Matrix4();
-      for (let i = 0; i < 20; i++){ m4.setPosition(5.6 - 5.4 + i * .57, so.base - .22, zz); inst.setMatrixAt(i, m4); }
-      sh.add(inst);
-    }
-    for (const s of [-1, 1]){
-      const gf = gableFace(so, -3.2, 3.2, F + 2.7, { base: M.plaster, gold: M.gold, panel: M.redDeep, inset: .6 });
-      gf.rotation.y = s > 0 ? Math.PI / 2 : -Math.PI / 2; gf.position.set(5.6 + s * 4.72, 0, -9.05); sh.add(gf);
-    }
-    for (const z of [-11.9, -9.05, -6.2]) sh.add(cyl(.18, .18, 2.7, M.red, 1.05, F, z, 12));
-    sh.add(box(.2, .26, 6.5, M.red, 1.0, F + 2.45, -9.05));
-    for (const z of [-7.7, -10.4]) sh.add(tbox(.07, 1.5, 1.9, M.lattice, .97, F + .9, z, .9));
-    sh.add(box(.2, .22, 6.5, M.redDeep, 1.0, F + .05, -9.05));
+    const WH = 2.7;
+    sh.add(tbox(11.0, WH, 7.8, M.plaster, 5.65, F, -9.7, .5));
+    const so = { half: 7.6, base: 4.3, rise: 2.4, p: 1.35, lift: .38, thick: .45, len: 9.0 };
+    shelterRoof(so, [M.shingle, M.eave], sh, 5.65, -9.9);
+    sh.add(at(box(.85, .5, so.len + .2, M.ridge), 5.65, so.base + so.rise - .12, -9.9));
+    eaveRow(sh, -1.6, so.base - .22, -14.0, -5.9, .6);
+    eaveRow(sh, 12.9, so.base - .22, -14.0, -5.9, .6);
+    const gfw = gableFace(so, -5.4, 5.4, F + WH, { base: M.plaster, gold: M.gold, panel: M.redDeep, inset: .66 });
+    gfw.rotation.y = Math.PI; gfw.position.set(5.65, 0, -13.75); sh.add(gfw);
+    // front: lattice windows between red posts, a red beam above and a sill below
+    for (const z of [-8.2, -10.3, -12.4]) sh.add(tbox(.07, 1.5, 1.8, M.lattice, .115, F + .85, z, .9));
+    for (const z of [-7.15, -9.25, -11.35, -13.45]) sh.add(cyl(.17, .17, WH, M.red, .22, F, z, 12));
+    sh.add(box(.24, .3, 7.8, M.red, .12, F + WH - .3, -9.7));
+    sh.add(box(.2, .22, 7.8, M.redDeep, .1, F + .05, -9.7));
+    sh.add(box(.16, .16, 7.8, M.red, .12, F + 2.35, -9.7));
+    // veranda floor, two pillars under the eave and the railing continue along the front
+    sh.add(tbox(2.5, .12, 6.4, M.woodDark, -.9, F, -10.6, .6));
+    for (const z of [-9.7, -13.4]) sh.add(cyl(.2, .22, 2.8, M.red, -1.7, F + .12, z, 14));
+    sh.add(box(.3, .3, 6.4, M.red, -1.7, F + 2.9, -10.6));
   }
 
   // ------------------------------------------------------------------ mikoshi shelter
@@ -438,7 +436,7 @@ export function buildShrine({ aniso = 8 } = {}){
   // ------------------------------------------------------------------ ema rack (as in the picture: a wooden board with a small
   // grey roof, notched end posts, four rails and five columns of rounded wish plaques)
   {
-    const c = new THREE.Group(); c.position.set(12.5, 0, 21); root.add(c);
+    const c = new THREE.Group(); c.position.set(12.5, 0, 21); c.rotation.y = Math.PI / 2; root.add(c);
     const rack = P('ema-board', c), pl = P('ema-plaques', c);
     rack.add(tbox(5.0, .14, 9.2, M.paving, 0, 0, 0, .25));
     for (const s of [-1, 1]){

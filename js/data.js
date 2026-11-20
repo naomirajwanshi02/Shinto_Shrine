@@ -121,7 +121,7 @@ export const PARTS = {
   },
   'side-hall': {
     name: 'Side hall and roof',
-    text: 'Large shrines join several buildings. The worship hall stands at the front, and deeper inside is the sanctuary (honden) where the kami is enshrined. A lower roof behind the main one stands for that quieter, more private space.',
+    text: 'A lower wing joins the worship hall on its far side. Its roof runs parallel to the main roof but sits lower, and its front wall has three lattice windows behind the same red railing. Larger shrines join several buildings in this way, with the sanctuary (honden) where the kami is enshrined kept deepest inside.',
   },
   'pavilion-roof': {
     name: 'Mikoshi shelter roof',
