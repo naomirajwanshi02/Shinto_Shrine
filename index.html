@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#ecdfc6">
+<title>Shinto Shrine in AR</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%23d9441f' stroke-width='9' stroke-linecap='round'%3E%3Cpath d='M10 22h80M20 40h60M30 40v48M70 40v48'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="vendor/anatomy/iso.css">
+<link rel="stylesheet" href="css/anatomy-sepia.css">
+<link rel="stylesheet" href="css/app.css">
+<!-- mind-ar@1.2.5 imports sRGBEncoding, removed in three r162: keep three pinned at 0.160.0. -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+    "mindar-image-three": "https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js"
+  }
+}
+</script>
+</head>
+<body class="iso ar" data-theme="sepia">
+
+<!-- the live camera: the only background -->
+<div id="ar"></div>
+<!-- the shrine, drawn over the camera -->
+<div id="stage"></div>
+
+<!-- ============ 0 · CAMERA PERMISSION ============ -->
+<section id="perm" class="screen dim">
+  <div class="col center">
+    <div class="plate welcome">
+      <div class="permicon" aria-hidden="true"><svg viewBox="0 0 48 48" width="56" height="56"><rect x="5" y="13" width="38" height="27" rx="5" fill="none" stroke="currentColor" stroke-width="3"/><path d="M17 13l3-5h8l3 5" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><circle cx="24" cy="26.5" r="7.5" fill="none" stroke="currentColor" stroke-width="3"/></svg></div>
+      <h1>Allow camera access</h1>
+      <p>This page needs your camera. Tap the button, then choose <b>Allow</b>.</p>
+      <button class="btn red" id="permBtn">Allow camera</button>
+      <div class="status dark" id="permStatus"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 1 · VIEWFINDER: find the shrine picture ============ -->
+<div id="guide" class="overlay">
+  <div class="scan-top plate"><b>Point your camera at the Shinto Shrine picture</b><span class="sub">The shrine appears as soon as it is found</span></div>
+  <div class="frame"><i></i><i></i><i></i><i></i><div class="sweep"></div></div>
+  <div class="scan-bottom">
+    <div class="status" id="scanStatus">Starting camera…</div>
+    <div class="row">
+      <button class="btn ghost small" id="scanRetry" hidden>Try again</button>
+      <a class="btn ghost small" href="target.png" target="_blank" rel="noopener">Get the picture</a>
+      <button class="btn ghost small" id="scanSkip">No picture? Skip</button>
+    </div>
+  </div>
+</div>
+
+<div id="found" class="overlay"><div class="plate badge"><div class="stamp">✓</div><b>Found it!</b><span>Shinto Shrine</span></div></div>
+
+<!-- ============ 2 · INSTRUCTIONS ============ -->
+<section id="intro" class="screen dim">
+  <div class="col center">
+    <div class="plate welcome">
+      <img class="hero" src="assets/shinto-shrine.jpg" alt="">
+      <h1>You can begin!</h1>
+      <p>A <b>Shinto Shrine</b> will appear in front of you in 3D. It is not tied to the picture, so you can look at it from anywhere.</p>
+      <ol class="steps">
+        <li><b>1</b><span><u>Turn:</u> drag one finger</span></li>
+        <li><b>2</b><span><u>Zoom:</u> pinch two fingers</span></li>
+        <li><b>3</b><span><u>Look:</u> from every side</span></li>
+        <li><b>4</b><span><u>Touch:</u> tap any part to learn about it</span></li>
+      </ol>
+      <p>Keep your <b>camera on</b>: the shrine stands over the live view around you. This is an AR experience, so it needs <b>permission to use your camera</b>. The video stays on this phone and nothing is recorded or sent anywhere.</p>
+      <button class="btn red" id="goBtn">OK, show the shrine</button>
+      <div class="status dark" id="camStatus"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3 · VIEWING ============ -->
+<div id="hud" class="overlay">
+  <div class="hud-top">
+    <div class="plate notes" id="notes" aria-roledescription="carousel" aria-live="polite">
+      <button class="x" id="notesClose" aria-label="Close the information"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></button>
+      <div class="track" id="noteTrack"></div>
+      <article class="note part" id="partCard" hidden><h2 id="partName"></h2><p id="partText"></p></article>
+      <div class="note-foot"><div class="dots" id="noteDots" role="tablist" aria-label="Notes"></div></div>
+    </div>
+    <button class="iconbtn" id="infoBtn" aria-label="Show or hide the information" aria-expanded="true"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="6.2" r="1.9" fill="currentColor"/><path d="M12 10.5v8" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></button>
+  </div>
+  <div class="hud-bottom">
+    <div class="hint" id="hint" role="status">Drag to turn · Pinch to zoom · Tap a part</div>
+  </div>
+</div>
+
+<div class="plate errbox" id="err" hidden><b>Something went wrong</b><pre id="errText"></pre><button class="btn small" id="errBtn">Start over</button></div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

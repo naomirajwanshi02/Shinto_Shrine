@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Make target</title>
+<style>body{font:14px/1.4 Consolas,monospace;background:#ecdfc6;color:#3b2a1c;padding:16px}img{max-height:60vh;border:1px solid #8c7457;background:#fff}pre{white-space:pre-wrap}</style></head>
+<body>
+<h3>Shinto Shrine AR · target compiler</h3>
+<p>Turns <code>assets/shinto-shrine.jpg</code> (the Shinto Shrine picture) into <code>target.png</code> and compiles <code>targets.mind</code>. Needs <code>tools/serve.ps1</code> running (it saves both files into the project).</p>
+<button id="go">Build target.png + targets.mind</button>
+<div id="out"></div><pre id="log"></pre>
+<script type="module">
+const log = (t) => { document.getElementById('log').textContent += t + '\n'; };
+async function build(){
+  const src = new Image(); src.src = '../assets/shinto-shrine.jpg?' + Date.now(); await src.decode();
+  // flatten onto white (the print is on white paper) at a size MindAR handles well
+  const scale = Math.min(1, 1600 / src.naturalHeight);
+  const c = document.createElement('canvas');
+  c.width = Math.round(src.naturalWidth * scale); c.height = Math.round(src.naturalHeight * scale);
+  const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+  g.drawImage(src, 0, 0, c.width, c.height);
+  const png = await new Promise((ok) => c.toBlob(ok, 'image/png'));
+  let res = await fetch('/__save?name=target.png', { method: 'POST', body: png });
+  log(`target.png ${c.width}×${c.height}: ${res.ok ? 'saved' : 'save failed'}`);
+  const shown = new Image(); shown.src = URL.createObjectURL(png); document.getElementById('out').replaceChildren(shown);
+
+  log('loading MindAR compiler…');
+  await import('https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image.prod.js');
+  const img = new Image(); img.src = '../target.png?' + Date.now(); await img.decode();
+  const compiler = new window.MINDAR.IMAGE.Compiler();
+  let last = -10;
+  const data = await compiler.compileImageTargets([img], (p) => { if (p - last >= 10){ last = p; log(`compiling ${p.toFixed(0)}%`); } });
+  const t = data[0];
+  const det = t.matchingData.reduce((n, l) => n + l.maximaPoints.length + l.minimaPoints.length, 0);
+  const trk = t.trackingData.reduce((n, l) => n + l.points.length, 0);
+  log(`detection points: ${det} over ${t.matchingData.length} scales; tracking points: ${trk}`);
+  const buf = await compiler.exportData();
+  res = await fetch('/__save?name=targets.mind', { method: 'POST', body: new Blob([buf]) });
+  log(`targets.mind (${(buf.byteLength / 1024).toFixed(0)} KB): ${res.ok ? 'saved' : 'save failed'}`);
+  log('DONE');
+}
+document.getElementById('go').onclick = () => build().catch((e) => log('ERROR ' + (e.stack || e)));
+if (new URLSearchParams(location.search).has('build')) document.getElementById('go').click();
+</script>
+</body></html>

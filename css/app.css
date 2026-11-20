@@ -1,0 +1,151 @@
+/* Kumamoto Castle in AR: mobile-first UI on the Anatomy sepia tokens (css/anatomy-sepia.css).
+   No small print: every piece of text is 14px or larger. */
+:root{
+  --safe-t:env(safe-area-inset-top,0px);
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-l:env(safe-area-inset-left,0px);
+  --safe-r:env(safe-area-inset-right,0px);
+  --ui:'Zen Maru Gothic',ui-rounded,system-ui,-apple-system,'Segoe UI',sans-serif;
+  --glass:rgba(246,237,219,.94);
+  --pad:20px; /* side padding inside every panel */
+}
+.iso[data-theme="sepia"]{--anatomy-weight:1px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;position:fixed;inset:0;width:100%}
+body{background:var(--anatomy-page);color:var(--anatomy-text);font:500 16px/1.45 var(--ui);
+  overscroll-behavior:none;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+
+/* ---------- camera + 3D ---------- */
+#ar{position:fixed;inset:0;z-index:1;background:#1c120a;overflow:hidden}
+#ar.preview{background:radial-gradient(110% 80% at 50% 38%,#8a7152,#3b2a1c 72%,#1c120a)}
+#ar canvas{display:block}
+#stage{position:fixed;inset:0;z-index:2}
+#stage canvas.stage{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:grab}
+#stage canvas.stage:active{cursor:grabbing}
+
+/* ---------- screens & overlays ---------- */
+.screen{position:fixed;inset:0;z-index:20;display:none;flex-direction:column;align-items:center;
+  padding:calc(var(--safe-t) + 12px) calc(var(--safe-r) + 12px) calc(var(--safe-b) + 12px) calc(var(--safe-l) + 12px);overflow-y:auto}
+.screen.on{display:flex}
+.screen.dim{background:rgba(40,26,14,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.overlay{position:fixed;inset:0;z-index:10;display:none;pointer-events:none}
+.overlay.on{display:flex}
+.col{width:100%;max-width:460px;display:flex;flex-direction:column;gap:10px;margin:auto 0}
+.col.center{align-items:stretch;justify-content:center}
+.row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+
+/* ---------- Anatomy plate ---------- */
+.plate{position:relative;background:var(--anatomy-card);box-shadow:var(--anatomy-lift),0 0 0 1px var(--anatomy-mid);border-radius:6px}
+
+.btn{border:0;border-radius:999px;padding:15px 22px;min-height:52px;font-weight:800;font-size:18px;
+  background:var(--anatomy-hi);color:var(--anatomy-top);box-shadow:0 4px 0 #1c120a,0 8px 18px #3b2a1c40;
+  transition:transform .12s var(--anatomy-ease),box-shadow .12s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #1c120a,0 4px 10px #3b2a1c40}
+.btn.red{background:var(--anatomy-red);box-shadow:0 4px 0 #7a2a1b,0 8px 18px #b5452f40}
+.btn.ghost{background:var(--anatomy-card);color:var(--anatomy-strong);box-shadow:inset 0 0 0 1.5px var(--anatomy-mid);font-size:16px}
+.btn.small{min-height:44px;padding:10px 16px;font-size:15px}
+.btn:disabled{opacity:.6}
+a.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.btn[hidden]{display:none}
+
+/* ================= SCAN ================= */
+#guide{flex-direction:column;justify-content:space-between;align-items:center;padding:calc(var(--safe-t) + 12px) 16px calc(var(--safe-b) + 16px)}
+.scan-top{padding:14px var(--pad);text-align:center;max-width:420px;display:flex;flex-direction:column;gap:3px;background:var(--glass)}
+.scan-top b{color:var(--anatomy-strong);font-size:17px;line-height:1.25}
+.scan-top .sub{font-size:15px;color:var(--anatomy-text)}
+.frame{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(86vw,440px);aspect-ratio:4/3}
+.frame i{position:absolute;width:36px;height:36px;border:4px solid #fff8ec;filter:drop-shadow(0 1px 3px #000a)}
+.frame i:nth-child(1){top:0;left:0;border-right:0;border-bottom:0;border-radius:12px 0 0 0}
+.frame i:nth-child(2){top:0;right:0;border-left:0;border-bottom:0;border-radius:0 12px 0 0}
+.frame i:nth-child(3){bottom:0;left:0;border-right:0;border-top:0;border-radius:0 0 0 12px}
+.frame i:nth-child(4){bottom:0;right:0;border-left:0;border-top:0;border-radius:0 0 12px 0}
+.frame .sweep{position:absolute;left:10%;right:10%;height:3px;top:10%;background:var(--anatomy-red);box-shadow:0 0 12px var(--anatomy-red);
+  animation:sweep 2.2s ease-in-out infinite alternate;border-radius:3px}
+@keyframes sweep{to{top:88%}}
+.scan-bottom{display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:auto}
+.status{color:#fff8ec;text-shadow:0 1px 3px #000;font-size:15px;text-align:center;min-height:1.4em;max-width:340px}
+.status.dark{color:var(--anatomy-red);text-shadow:none;font-size:15px;margin:0 auto}
+
+#found{z-index:30;align-items:center;justify-content:center}
+#found.on{animation:fadeout 1.3s ease forwards}
+.badge{padding:18px 30px;text-align:center;display:flex;flex-direction:column;gap:2px;animation:pop .45s var(--anatomy-ease)}
+.badge .stamp{width:64px;height:64px;margin:0 auto 6px;border:4px solid var(--anatomy-red);border-radius:50%;color:var(--anatomy-red);
+  font:900 34px/56px 'Zen Maru Gothic',sans-serif;transform:rotate(-10deg)}
+.badge b{font-size:24px;color:var(--anatomy-strong)}
+.badge span{font-size:16px}
+@keyframes fadeout{0%,75%{opacity:1}100%{opacity:0}}
+@keyframes pop{from{transform:scale(.7);opacity:0}}
+
+/* ================= INSTRUCTIONS =================
+   Every paragraph runs the full width of the panel, with the same padding on both sides. */
+.welcome{padding:30px var(--pad) 26px;text-align:center;display:flex;flex-direction:column;gap:12px;align-items:stretch}
+.welcome h1{margin:0;font-size:clamp(28px,8.5vw,36px);line-height:1.05;font-weight:900;color:var(--anatomy-strong)}
+.welcome p{margin:0;width:100%;max-width:none;font-size:16px;line-height:1.5;text-align:left;hyphens:none;-webkit-hyphens:none;text-wrap:pretty}
+.hero{display:block;width:100%;height:auto;max-height:30vh;object-fit:contain;margin:0 auto;border-radius:8px}
+.steps{list-style:none;margin:2px 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left;width:100%}
+.steps li{display:flex;gap:10px;align-items:center;background:var(--anatomy-shade-3);border-radius:10px;padding:10px 12px;font-size:15px;line-height:1.25;box-shadow:inset 0 0 0 1px var(--anatomy-faint)}
+.steps li > b{flex:none;width:26px;height:26px;border-radius:50%;background:var(--anatomy-red);color:#fff8ec;display:grid;place-items:center;font-size:15px}
+.steps li > span{flex:1;min-width:0;text-align:left}
+.steps u{text-decoration:none;font-weight:900;color:var(--anatomy-strong)}
+.permicon{color:var(--anatomy-red);display:grid;place-items:center;margin-top:-4px}
+
+/* ================= VIEWING HUD ================= */
+#hud{flex-direction:column;align-items:center;justify-content:space-between;gap:12px;
+  padding:calc(var(--safe-t) + 8px) calc(var(--safe-r) + 10px) calc(var(--safe-b) + 14px) calc(var(--safe-l) + 10px)}
+.hud-top{position:relative;display:flex;align-items:flex-start;gap:8px;width:100%;max-width:500px;margin:0 auto}
+.iconcol{flex:none;display:flex;flex-direction:column;gap:6px;pointer-events:auto}
+.iconbtn{width:42px;height:42px;border:0;border-radius:50%;background:var(--glass);color:var(--anatomy-strong);display:grid;place-items:center;
+  box-shadow:var(--anatomy-lift),0 0 0 1px var(--anatomy-mid)}
+.iconbtn:active{transform:scale(.94)}
+
+.notes{flex:1;min-width:0;overflow:hidden;background:var(--glass);pointer-events:auto;touch-action:pan-y}
+.notes.pop{animation:pop .4s var(--anatomy-ease)}
+.track{display:flex;transition:transform .7s cubic-bezier(.65,0,.25,1)}
+.note{flex:0 0 100%;padding:14px var(--pad) 2px;position:relative}
+.note h2{margin:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:22px;line-height:1.1;font-weight:900;color:var(--anatomy-strong)}
+.note h2 small{color:var(--anatomy-red);font-weight:700;font-size:15px}
+.note p{margin:6px 0 0;width:100%;font-size:15px;line-height:1.42;text-align:left;hyphens:none;-webkit-hyphens:none;text-wrap:pretty}
+.note-foot{display:flex;align-items:center;justify-content:center;padding:0 14px 8px}
+.dots{display:flex;gap:6px}
+.dots button{width:22px;height:22px;border:0;padding:0;background:none;display:grid;place-items:center}
+.dots button::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--anatomy-faint);transition:width .3s,background .3s}
+.dots button[aria-selected="true"]::after{width:20px;border-radius:4px;background:var(--anatomy-red)}
+
+.hud-bottom{display:flex;justify-content:center;width:100%}
+.hint{background:rgba(28,18,10,.66);color:#fff8ec;padding:9px 18px;border-radius:999px;font-size:15px;text-align:center;max-width:100%;
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+
+.errbox{position:fixed;left:16px;right:16px;bottom:calc(var(--safe-b) + 16px);z-index:60;padding:14px var(--pad);max-width:520px;margin:0 auto}
+.errbox pre{white-space:pre-wrap;font-size:14px;max-height:34vh;overflow:auto}
+
+@media (max-height:700px){.hero{max-height:20vh}.welcome{gap:8px;padding-top:24px}.steps li{padding-top:8px;padding-bottom:8px;font-size:15px}.welcome p{font-size:15px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* tablets and large screens: everything scales up and stays centred */
+@media (min-width:700px){
+  .col{max-width:580px}
+  .welcome{padding:38px 32px 32px;gap:14px}
+  .welcome p,.steps li{font-size:18px}
+  .hero{max-height:32vh}
+  .hud-top{max-width:560px}
+  .note{padding:18px 28px 4px}.note h2{font-size:26px}.note p{font-size:17px}
+  :root{--pad:28px}
+}
+@media (min-width:1100px){.col{max-width:640px}}
+
+/* information panel: the small cross is inside the panel; the i button sits beside it */
+.notes[hidden]{display:none}
+.notes .x{position:absolute;top:8px;right:8px;z-index:2;width:28px;height:28px;border:0;border-radius:50%;background:var(--anatomy-shade-2);color:var(--anatomy-strong);display:grid;place-items:center;padding:0}
+.notes .x:active{transform:scale(.92)}
+.note h2{padding-right:30px}
+.hud-top{justify-content:flex-end}
+.note p,.note h2,.welcome p,.steps li > span{overflow-wrap:normal;word-break:normal}
+
+/* ================= SHRINE: part card and layout fixes ================= */
+[hidden]{display:none!important}
+.note.part{flex:none;width:100%}
+.note.part h2{font-size:22px;color:var(--anatomy-red)}
+.note.part p{padding-bottom:12px}
+.note-foot:has(.dots[hidden]){display:none}
+.hint{pointer-events:none}
