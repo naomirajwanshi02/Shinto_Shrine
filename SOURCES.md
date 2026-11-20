@@ -16,3 +16,11 @@ Facts used in `js/data.js`:
 - Mikoshi, phoenix finial, carrying poles: [Mikoshi (Wikipedia)](https://en.wikipedia.org/wiki/Mikoshi)
 - Prayer manners (coin, two bows, two claps, one bow) and the meaning of "ema" (horse picture) are standard,
   widely documented customs.
+
+Hall sides and back (veranda round the whole building, railing with top, middle and bottom rails, cypress-bark roof, hall placed in front of
+a deeper sanctuary): [Shinto architecture (Wikipedia)](https://en.wikipedia.org/wiki/Shinto_architecture),
+[JAANUS: haiden](https://projects.mcah.columbia.edu/jaanus/record/haiden),
+[JAANUS: koran](https://projects.mcah.columbia.edu/jaanus/node/45),
+[Shinto Architecture (World History Encyclopedia)](https://www.worldhistory.org/Shinto_Architecture/),
+[Main Gate, Fushimi Inari Taisha (Kyoto Travel)](https://ja.kyoto.travel/komafuda/show.php?id=2262&lang=en).
+The window, door and post layout on the far end and back follows the front and long side of the supplied picture.

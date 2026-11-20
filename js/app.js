@@ -4,9 +4,9 @@
 // ?demo=1     skip the picture (camera still on as the background)
 // ?preview=1  no camera at all
 
-import { NOTES, NOTE_MS, PARTS } from './data.js?v=5';
-import { scan, stopScan, scanning, plainCamera, freezeTracking } from './scan.js?v=5';
-import { mountStage, unmountStage, selectPart } from './stage.js?v=5';
+import { NOTES, NOTE_MS, PARTS } from './data.js?v=6';
+import { scan, stopScan, scanning, plainCamera, freezeTracking } from './scan.js?v=6';
+import { mountStage, unmountStage, selectPart } from './stage.js?v=6';
 
 const $ = (id) => document.getElementById(id);
 const q = new URLSearchParams(location.search);

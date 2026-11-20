@@ -89,7 +89,7 @@ export const PARTS = {
   },
   'haiden-walls': {
     name: 'Walls and windows',
-    text: 'White plaster fills the spaces between the red frame. Windows of dark wooden lattice let in a little light, and the red double doors at the front stay closed or open to the inner space.',
+    text: 'White plaster fills the spaces between the red frame. Windows of dark wooden lattice let in a little light. Red double doors open the front, the back and the far end of the side hall, and a veranda with a railing runs round the whole building.',
   },
   'haiden-roof': {
     name: 'Main roof',

@@ -5,7 +5,7 @@
 // Every touchable piece is a "part": a group whose userData.part is its key in js/data.js.
 
 import * as THREE from 'three';
-import { rng, makeTextures, mat, box, cyl, ball, pyramid, loft, tbox, gableFace, gableRoof, roofTopY } from './kit.js?v=5';
+import { rng, makeTextures, mat, box, cyl, ball, pyramid, loft, tbox, gableFace, gableRoof, roofTopY } from './kit.js?v=6';
 
 export function buildShrine({ aniso = 8 } = {}){
   const T = makeTextures(aniso);
@@ -226,8 +226,8 @@ export function buildShrine({ aniso = 8 } = {}){
     // stone platform
     const pf = P('haiden-platform');
     // plain grey slabs, no texture: a low wide base under a taller upper platform (nothing shares a plane)
-    pf.add(box(18.0, .45, 25.1, M.baseStone, 5.8, 0, -2.75));
-    pf.add(box(16.4, F - .45, 23.5, M.stone, 5.8, .45, -2.75));
+    pf.add(box(18.0, .45, 27.2, M.baseStone, 5.8, 0, -3.4));
+    pf.add(box(16.4, F - .45, 25.2, M.stone, 5.8, .45, -3.6));
     // stairs, off-centre like the picture, with sloping side walls
     const st = P('haiden-stairs');
     const zs = -1.5;
@@ -290,8 +290,8 @@ export function buildShrine({ aniso = 8 } = {}){
       for (let i = 0; i < n * 3; i++) g.add(box(.05, .4, .05, M.red, (i + .5) * len / (n * 3), .54, 0));
     };
     rail(-1.7, -7, -1.7, -3.0); rail(-1.7, 3.0, -1.7, 7);
-    rail(-1.7, 7, 11.1, 7);
-    rail(-1.7, -7, -1.7, -13.8);
+    rail(-1.7, 7, 12.9, 7);
+    rail(-1.7, -7, -1.7, -15.2);
     rail(-1.7, -3.0, -1.7, -2.6); // closes up to the porch pillar
 
     // ---- main roof
@@ -374,11 +374,11 @@ export function buildShrine({ aniso = 8 } = {}){
     const sh = P('side-hall');
     const WH = 2.7;
     sh.add(tbox(11.0, WH, 7.8, M.plaster, 5.65, F, -9.7, .5));
-    const so = { half: 7.6, base: 4.3, rise: 2.4, p: 1.35, lift: .38, thick: .45, len: 9.0 };
-    shelterRoof(so, [M.shingle, M.eave], sh, 5.65, -9.9);
-    sh.add(at(box(.85, .5, so.len + .2, M.ridge), 5.65, so.base + so.rise - .12, -9.9));
-    eaveRow(sh, -1.6, so.base - .22, -14.0, -5.9, .6);
-    eaveRow(sh, 12.9, so.base - .22, -14.0, -5.9, .6);
+    const so = { half: 7.6, base: 4.3, rise: 2.4, p: 1.35, lift: .38, thick: .45, len: 10.8 };
+    shelterRoof(so, [M.shingle, M.eave], sh, 5.65, -10.3);
+    sh.add(at(box(.85, .5, so.len + .2, M.ridge), 5.65, so.base + so.rise - .12, -10.3));
+    eaveRow(sh, -1.6, so.base - .22, -15.0, -5.9, .6);
+    eaveRow(sh, 12.9, so.base - .22, -15.0, -5.9, .6);
     const gfw = gableFace(so, -5.4, 5.4, F + WH, { base: M.plaster, gold: M.gold, panel: M.redDeep, inset: .66 });
     gfw.rotation.y = Math.PI; gfw.position.set(5.65, 0, -13.75); sh.add(gfw);
     // front: lattice windows between red posts, a red beam above and a sill below
@@ -391,6 +391,48 @@ export function buildShrine({ aniso = 8 } = {}){
     sh.add(tbox(2.5, .12, 6.4, M.woodDark, -.9, F, -10.6, .6));
     for (const z of [-9.7, -13.4]) sh.add(cyl(.2, .22, 2.8, M.red, -1.7, F + .12, z, 14));
     sh.add(box(.3, .3, 6.4, M.red, -1.7, F + 2.9, -10.6));
+
+    // ================= the far (left) end and the back of the hall =================
+    const BX = 12.9, ZE = -15.2, PH = 2.6;            // back pillar line, far-end pillar line, pillar height
+    // veranda floor round the back and the far end
+    vp.add(tbox(2.05, .12, 22.8, M.woodDark, 12.175, F, -4.0, .6));
+    vp.add(tbox(15.35, .12, 1.8, M.woodDark, 5.525, F, -14.5, .6));
+    for (const z of [-15.2, -12.2, -9.2, -7, -3.5, 0, 3.5, 7]) vp.add(cyl(.2, .22, PH, M.red, BX, F + .12, z, 14));
+    for (const x of [-1.7, 1.6, 4.8, 8.0, 11.1]) vp.add(cyl(.2, .22, PH, M.red, x, F + .12, ZE, 14));
+    vp.add(box(.3, .22, 22.6, M.red, BX, F + .12 + PH - .1, -4.1));
+    vp.add(box(14.9, .22, .3, M.red, 5.65, F + .12 + PH - .1, ZE));
+    rail(BX, 7, BX, ZE); rail(BX, ZE, -1.7, ZE);
+    // back wall of the main hall: red posts, double door, lattice windows, beams
+    for (const z of [-5.8, -2.6, 2.6, 5.8]) wl.add(cyl(.2, .2, 4.0, M.red, 11.1, F, z, 12));
+    wl.add(box(.24, .32, 11.8, M.red, 11.1, WT - .35, 0));
+    wl.add(box(.2, .2, 11.8, M.redDeep, 11.12, F + .02, 0));
+    wl.add(box(.16, .16, 11.8, M.red, 11.14, F + 2.9, 0));
+    wl.add(box(.06, 3.2, 2.9, M.dark, 11.19, F + .1, 0));
+    for (const s of [-1, 1]){
+      wl.add(box(.1, 3.0, 1.3, M.redDeep, 11.2, F + .15, s * .7));
+      for (let i = 0; i < 4; i++) for (let j = 0; j < 2; j++) wl.add(ball(.07, M.gold, 11.25, F + .75 + i * .62, s * (.35 + j * .6)));
+    }
+    wl.add(box(.08, 3.0, .12, M.black, 11.22, F + .15, 0));
+    for (const z of [-4.2, 4.2]) wl.add(tbox(.07, 1.8, 2.2, M.lattice, 11.19, F + 1.2, z, .9));
+    // back of the side hall
+    for (const z of [-7.15, -9.25, -11.35, -13.45]) sh.add(cyl(.17, .17, WH, M.red, 11.1, F, z, 12));
+    for (const z of [-8.2, -10.3, -12.4]) sh.add(tbox(.07, 1.5, 1.8, M.lattice, 11.185, F + .85, z, .9));
+    sh.add(box(.24, .3, 7.8, M.red, 11.14, F + WH - .3, -9.7));
+    sh.add(box(.2, .22, 7.8, M.redDeep, 11.12, F + .05, -9.7));
+    sh.add(box(.16, .16, 7.8, M.red, 11.14, F + 2.35, -9.7));
+    // far end of the side hall: a central double door between lattice windows, red posts and beams
+    const zE = -13.6;
+    for (const x of [.2, 3.25, 4.25, 7.05, 8.05, 11.1]) sh.add(cyl(.17, .17, WH, M.red, x, F, zE - .02, 12));
+    sh.add(box(2.6, 2.5, .06, M.dark, 5.65, F + .1, zE - .03));
+    for (const s of [-1, 1]){
+      sh.add(box(1.2, 2.4, .08, M.redDeep, 5.65 + s * .65, F + .12, zE - .05));
+      for (let i = 0; i < 3; i++) for (let j = 0; j < 2; j++) sh.add(ball(.06, M.gold, 5.65 + s * (.3 + j * .6), F + .6 + i * .6, zE - .1));
+    }
+    sh.add(box(.1, 2.4, .08, M.black, 5.65, F + .12, zE - .07));
+    for (const x of [1.75, 9.6]) sh.add(tbox(2.0, 1.5, .07, M.lattice, x, F + .85, zE - .035, .9));
+    sh.add(box(11.0, .3, .24, M.red, 5.65, F + WH - .3, zE - .08));
+    sh.add(box(11.0, .22, .2, M.redDeep, 5.65, F + .05, zE - .1));
+    sh.add(box(11.0, .16, .16, M.red, 5.65, F + 2.35, zE - .06));
   }
 
   // ------------------------------------------------------------------ mikoshi shelter
