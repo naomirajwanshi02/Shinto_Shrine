@@ -149,3 +149,6 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
 .note.part p{padding-bottom:12px}
 .note-foot:has(.dots[hidden]){display:none}
 .hint{pointer-events:none}
+
+/* cross above the i button */
+.iconcol{flex:none;display:flex;flex-direction:column;gap:8px;pointer-events:auto}

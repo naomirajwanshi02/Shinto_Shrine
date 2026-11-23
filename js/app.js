@@ -4,9 +4,9 @@
 // ?demo=1     skip the picture (camera still on as the background)
 // ?preview=1  no camera at all
 
-import { NOTES, NOTE_MS, PARTS } from './data.js?v=6';
-import { scan, stopScan, scanning, plainCamera, freezeTracking } from './scan.js?v=6';
-import { mountStage, unmountStage, selectPart } from './stage.js?v=6';
+import { NOTES, NOTE_MS, PARTS } from './data.js?v=7';
+import { scan, stopScan, scanning, plainCamera, freezeTracking } from './scan.js?v=7';
+import { mountStage, unmountStage, selectPart } from './stage.js?v=7';
 
 const $ = (id) => document.getElementById(id);
 const q = new URLSearchParams(location.search);
@@ -102,6 +102,8 @@ async function begin(){
   try { mountStage($('stage'), { onPick }); }
   catch (err){ console.error(err); $('errText').textContent = String(err?.stack || err); $('err').hidden = false; return; }
   overlay('hud', true);
+  $('partCard').hidden = true; $('noteTrack').hidden = false; $('noteDots').parentElement.hidden = false; S.part = null;
+  $('notes').hidden = false; $('infoBtn').setAttribute('aria-expanded', 'true');
   pop($('notes'));
   buildNotes();
   goNote(0);
@@ -189,7 +191,20 @@ function onPick(id){
   buzz(15);
   void wasHidden;
 }
-// the small cross: closes the part card first, then the panel
+// the small cross inside the panel always closes the panel (and clears any lit part); the i button brings it back
 $('notesClose').addEventListener('click', (e) => {
-  if (S.part){ e.stopImmediatePropagation(); selectPart(null); return; }
+  e.stopImmediatePropagation();
+  if (S.part) selectPart(null);
+  setInfo(false);
 }, true);
+
+// the cross above the i button: leave the 3D view and go back to scanning the picture
+$('exitBtn').addEventListener('click', () => {
+  selectPart(null);
+  clearTimeout(S.noteT);
+  S.part = null;
+  stopScan();
+  $('ar').querySelectorAll('video').forEach((v) => v.srcObject?.getTracks?.().forEach((t) => t.stop()));
+  $('ar').innerHTML = '';
+  openScan();
+});
