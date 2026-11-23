@@ -4,9 +4,9 @@
 // ?demo=1     skip the picture (camera still on as the background)
 // ?preview=1  no camera at all
 
-import { NOTES, NOTE_MS, PARTS } from './data.js?v=8';
-import { scan, stopScan, scanning, plainCamera, freezeTracking } from './scan.js?v=8';
-import { mountStage, unmountStage, selectPart } from './stage.js?v=8';
+import { NOTES, NOTE_MS, PARTS } from './data.js?v=9';
+import { scan, stopScan, scanning, plainCamera, freezeTracking } from './scan.js?v=9';
+import { mountStage, unmountStage, selectPart } from './stage.js?v=9';
 
 const $ = (id) => document.getElementById(id);
 const q = new URLSearchParams(location.search);
@@ -198,13 +198,16 @@ $('notesClose').addEventListener('click', (e) => {
   setInfo(false);
 }, true);
 
-// the cross above the i button: leave the 3D view and go back to scanning the picture
-$('exitBtn').addEventListener('click', () => {
+// go back to scanning the picture: stop everything, release the camera and start the scanner again
+function backToScan(){
   selectPart(null);
   clearTimeout(S.noteT);
   S.part = null;
   stopScan();
   $('ar').querySelectorAll('video').forEach((v) => v.srcObject?.getTracks?.().forEach((t) => t.stop()));
   $('ar').innerHTML = '';
+  show(null);
   openScan();
-});
+}
+$('exitBtn').addEventListener('click', backToScan);
+$('introClose').addEventListener('click', backToScan);

@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="vendor/anatomy/iso.css">
 <link rel="stylesheet" href="css/anatomy-sepia.css">
-<link rel="stylesheet" href="css/app.css?v=8">
+<link rel="stylesheet" href="css/app.css?v=9">
 <!-- mind-ar@1.2.5 imports sRGBEncoding, removed in three r162: keep three pinned at 0.160.0. -->
 <script type="importmap">
 {
@@ -65,6 +65,7 @@
 <section id="intro" class="screen dim">
   <div class="col center">
     <div class="plate welcome">
+      <button class="x" id="introClose" aria-label="Back to scanning"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></button>
       <img class="hero" src="assets/shinto-shrine-cutout.png?v=1" alt="">
       <h1>You can begin!</h1>
       <p>A <b>Shinto Shrine</b> will appear in front of you in 3D. It is not tied to the picture, so you can look at it from anywhere.</p>
@@ -102,6 +103,6 @@
 
 <div class="plate errbox" id="err" hidden><b>Something went wrong</b><pre id="errText"></pre><button class="btn small" id="errBtn">Start over</button></div>
 
-<script type="module" src="js/app.js?v=8"></script>
+<script type="module" src="js/app.js?v=9"></script>
 </body>
 </html>

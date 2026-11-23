@@ -5,7 +5,7 @@
 // Every touchable piece is a "part": a group whose userData.part is its key in js/data.js.
 
 import * as THREE from 'three';
-import { rng, makeTextures, mat, box, cyl, ball, pyramid, loft, tbox, gableFace, gableRoof, roofTopY } from './kit.js?v=8';
+import { rng, makeTextures, mat, box, cyl, ball, pyramid, loft, tbox, gableFace, gableRoof, roofTopY } from './kit.js?v=9';
 
 export function buildShrine({ aniso = 8 } = {}){
   const T = makeTextures(aniso);
