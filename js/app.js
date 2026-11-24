@@ -4,9 +4,9 @@
 // ?demo=1     skip the picture (camera still on as the background)
 // ?preview=1  no camera at all
 
-import { NOTES, NOTE_MS, PARTS } from './data.js?v=10';
-import { scan, stopScan, scanning, plainCamera, freezeTracking } from './scan.js?v=10';
-import { mountStage, unmountStage, selectPart } from './stage.js?v=10';
+import { NOTES, NOTE_MS, PARTS } from './data.js?v=11';
+import { scan, stopScan, scanning, plainCamera, freezeTracking } from './scan.js?v=11';
+import { mountStage, unmountStage, selectPart } from './stage.js?v=11';
 
 const $ = (id) => document.getElementById(id);
 const q = new URLSearchParams(location.search);
@@ -198,16 +198,16 @@ $('notesClose').addEventListener('click', (e) => {
   setInfo(false);
 }, true);
 
-// go back to scanning the picture: stop everything, release the camera and start the scanner again
-function backToScan(){
-  selectPart(null);
+// every cross leaves this interaction and goes back to Scan to Explore, the hub it is linked from,
+// straight onto its scanning screen
+const HUB = 'https://naomirajwanshi02.github.io/Scan_To_Explore/?scan=1';
+function toHub(){
   clearTimeout(S.noteT);
-  S.part = null;
-  stopScan();
+  try { unmountStage(); } catch { /* fine */ }
+  try { stopScan(); } catch { /* fine */ }
   $('ar').querySelectorAll('video').forEach((v) => v.srcObject?.getTracks?.().forEach((t) => t.stop()));
-  $('ar').innerHTML = '';
-  show(null);
-  openScan();
+  location.href = HUB;
 }
-$('exitBtn').addEventListener('click', backToScan);
-$('introClose').addEventListener('click', backToScan);
+$('exitBtn').addEventListener('click', toHub);
+$('introClose').addEventListener('click', toHub);
+$('guideClose').addEventListener('click', toHub);
