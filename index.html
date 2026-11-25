@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="vendor/anatomy/iso.css">
 <link rel="stylesheet" href="css/anatomy-sepia.css">
-<link rel="stylesheet" href="css/app.css?v=11">
+<link rel="stylesheet" href="css/app.css?v=12">
 <!-- mind-ar@1.2.5 imports sRGBEncoding, removed in three r162: keep three pinned at 0.160.0. -->
 <script type="importmap">
 {
@@ -67,15 +67,15 @@
     <div class="plate welcome">
       <button class="x" id="introClose" aria-label="Back to Scan to Explore"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></button>
       <img class="hero" src="assets/shinto-shrine-cutout.png?v=1" alt="">
-      <h1>You can begin!</h1>
-      <p>A <b>Shinto Shrine</b> will appear in front of you in 3D. It is not tied to the picture, so you can look at it from anywhere.</p>
+      <h1>Explore the shrine!</h1>
+      <p>A <b>Shinto shrine</b> will stand in front of you in 3D. It is not tied to the picture, so you can look at it from anywhere.</p>
       <ol class="steps">
         <li><b>1</b><span><u>Turn:</u> drag one finger</span></li>
         <li><b>2</b><span><u>Zoom:</u> pinch two fingers</span></li>
         <li><b>3</b><span><u>Look:</u> from every side</span></li>
-        <li><b>4</b><span><u>Touch:</u> tap any part to learn about it</span></li>
+        <li><b>4</b><span><u>Touch:</u> tap any part</span></li>
       </ol>
-      <p>Keep your <b>camera on</b>: the shrine stands over the live view around you. This is an AR experience, so it needs <b>permission to use your camera</b>. The video stays on this phone and nothing is recorded or sent anywhere.</p>
+      <p>Keep your <b>camera on</b>: the shrine stands over the live view around you. The video stays on this phone and is never sent anywhere.</p>
       <button class="btn red" id="goBtn">Start</button>
       <div class="status dark" id="camStatus"></div>
     </div>
@@ -92,7 +92,7 @@
       <div class="note-foot"><div class="dots" id="noteDots" role="tablist" aria-label="Notes"></div></div>
     </div>
     <div class="iconcol">
-      <button class="iconbtn plainx" id="exitBtn" aria-label="Back to Scan to Explore"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></button>
+      <button class="iconbtn" id="exitBtn" aria-label="Back to Scan to Explore"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></button>
       <button class="iconbtn" id="infoBtn" aria-label="Show or hide the information" aria-expanded="true"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="6.2" r="1.9" fill="currentColor"/><path d="M12 10.5v8" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></button>
     </div>
   </div>
@@ -103,6 +103,6 @@
 
 <div class="plate errbox" id="err" hidden><b>Something went wrong</b><pre id="errText"></pre><button class="btn small" id="errBtn">Start over</button></div>
 
-<script type="module" src="js/app.js?v=11"></script>
+<script type="module" src="js/app.js?v=12"></script>
 </body>
 </html>
